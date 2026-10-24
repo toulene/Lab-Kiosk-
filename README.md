@@ -72,3 +72,7 @@ Suggested: PLA/PETG, 0.2 mm layers, 3 walls, 15 % gyroid infill. Estimated filam
 8. Slide tray in on the rails.
 
 Edit parameters at the top of kiosk_v2.py (pip install cadquery, then python build.py) to change sizes, wall thickness or tilt.
+
+## License
+MIT - see [LICENSE](LICENSE). The public training datasets are not included in this repository; they belong
+to their authors under CC BY 4.0 and are credited with links in `images/class_map.csv`.
