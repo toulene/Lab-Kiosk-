@@ -1,0 +1,73 @@
+﻿dataset,source_class,target_class
+# our own frames - names already ours,,
+dataset_v2,arduino_mega,arduino_mega
+dataset_v2,diode,diode
+dataset_v2,disk_cap,disk_cap
+dataset_v2,electrolytic_cap,electrolytic_cap
+dataset_v2,esp32,esp32
+dataset_v2,mosfet,mosfet
+dataset_v2,transistor,transistor
+# boards - https://universe.roboflow.com/donguyenanhtuan/final_23,,
+final_23,Arduino-Uno,arduino_uno
+final_23,Arduino-Mega,arduino_mega
+final_23,ESP32,esp32
+# https://universe.roboflow.com/anhtuaneiu/eiu - a shield sits on an Uno and hides it,,
+eiu,Arduino Uno -Black-,arduino_uno
+eiu,Arduino Uno -Green-,arduino_uno
+eiu,Arduino Mega 2560 -Black-,arduino_mega
+eiu,Arduino Mega 2560 -Blue-,arduino_mega
+eiu,Arduino Mega 2560 -Yellow-,arduino_mega
+eiu,Arduino Uno Camera Shield,!skip
+eiu,Arduino Uno WiFi Shield,!skip
+# https://universe.roboflow.com/anhtuaneiu/iot_1,,
+iot_1,Arduino Uno -Black-,arduino_uno
+iot_1,Arduino Uno -Green-,arduino_uno
+iot_1,Arduino Mega 2560 -Black-,arduino_mega
+iot_1,Arduino Uno WiFi Shield,!skip
+# https://universe.roboflow.com/componentes/placas-73c2f,,
+placas,Arduino-Uno,arduino_uno
+placas,ESP32,esp32
+# https://universe.roboflow.com/esp32-edzfe/my-first-project-d0irf,,
+my_first_project,ArduinoUNO,arduino_uno
+my_first_project,ESP32,esp32
+# https://universe.roboflow.com/componentes/esp32-wgkie,,
+esp32_componentes,ESP32,esp32
+# https://universe.roboflow.com/eris-2868s/esp32-h1rxt,,
+esp32_eris,ARDUINO uno,arduino_uno
+esp32_eris,ESP32,esp32
+# https://universe.roboflow.com/ontheball/zero-mega,,
+zero_mega,Arduino-Mega,arduino_mega
+# https://universe.roboflow.com/helloworld-gcnup/board-i9xgk (segmentation - polygons become boxes),,
+board,Arduino uno,arduino_uno
+board,esp32,esp32
+# components - https://universe.roboflow.com/ned-university-of-engineering-and-technology-5f8dq/all-components,,
+all_components,Resistor,resistor
+all_components,Diode,diode
+all_components,LED,led
+all_components,Capacitor,electrolytic_cap
+all_components,Ceramic Capacitor,disk_cap
+# https://universe.roboflow.com/jiaqiye_77-163-com/electronic-components-lzinq,,
+jiaqiye,resistor,resistor
+jiaqiye,diode,diode
+jiaqiye,electrolytic-capacitor,electrolytic_cap
+jiaqiye,ceramic-capacitor,disk_cap
+jiaqiye,transistor,transistor
+# https://universe.roboflow.com/charles-dominique-bacanto-sk3id/arduino-ugn9a - generic Arduino/Capacitor hide our parts,,
+bacanto,Resistor,resistor
+bacanto,LED,led
+bacanto,Transistor,transistor
+bacanto,Arduino,!skip
+bacanto,Capacitor,!skip
+# https://universe.roboflow.com/300rob/arduino-tybgm - only the UNO R3 is ours; other boards dropped,,
+rob300,Placa de Dezvoltare UNO R3,arduino_uno
+# images you annotate yourself (export YOLOv8 into downloads\my_annotations) - already our names,,
+my_annotations,arduino_mega,arduino_mega
+my_annotations,arduino_uno,arduino_uno
+my_annotations,esp32,esp32
+my_annotations,resistor,resistor
+my_annotations,electrolytic_cap,electrolytic_cap
+my_annotations,diode,diode
+my_annotations,led,led
+my_annotations,disk_cap,disk_cap
+my_annotations,mosfet,mosfet
+my_annotations,transistor,transistor

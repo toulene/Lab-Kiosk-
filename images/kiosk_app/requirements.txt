@@ -1,0 +1,10 @@
+# Kiosk server (Pi and laptop). picamera2 comes from apt on the Pi, not pip.
+flask>=3.0
+waitress>=3.0
+numpy
+pillow
+onnxruntime
+# Only needed for a USB webcam instead of the Pi Camera:
+# opencv-python-headless
+# Only needed to run the .pth directly instead of ONNX (large install, slower on the Pi):
+# rfdetr

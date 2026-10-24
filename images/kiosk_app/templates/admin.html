@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kiosk Admin</title>
+<link rel="stylesheet" href="/static/kiosk.css">
+<style>
+  :root { font-size: 16px; }
+  body { overflow: auto; user-select: text; }
+  main { max-width: 1100px; margin: 0 auto; padding: 1.5rem 16px 3rem; }
+  .tabs { display: flex; gap: .5rem; margin: 1.2rem 0; flex-wrap: wrap; }
+  .tabs button { font: inherit; background: var(--surface); color: var(--muted); border: 0; border-radius: 10px; padding: .6rem 1rem; cursor: pointer; }
+  .tabs button.on { background: var(--primary); color: #042f2e; font-weight: 600; }
+  .tab { display: none; } .tab.on { display: block; }
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 12px; overflow: hidden; }
+  th, td { text-align: left; padding: .6rem .8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: .85rem; }
+  td img { width: 140px; border-radius: 6px; cursor: zoom-in; }
+  input { font: inherit; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: .5rem .7rem; }
+  input[type=number] { width: 6rem; }
+  form.inline { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .btn { min-height: 2.4rem; padding: .4rem 1rem; }
+  .mismatch { color: var(--return); font-size: .8rem; }
+  #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.9); display: none; place-items: center; cursor: zoom-out; }
+  #lightbox.on { display: grid; } #lightbox img { max-width: 95vw; max-height: 95vh; }
+  .table-wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+<main>
+  <header class="topbar"><h2>Kiosk Admin</h2><a class="btn btn-ghost" href="/" style="text-decoration:none">Open kiosk</a></header>
+
+  <form id="pin-form" class="inline">
+    <input id="pin" type="password" placeholder="Admin PIN" autofocus>
+    <button class="btn btn-primary">Unlock</button>
+    <span id="pin-error" class="error"></span>
+  </form>
+
+  <div id="panel" hidden>
+    <div class="tabs">
+      <button data-tab="holdings" class="on">Who has what</button>
+      <button data-tab="history">Transactions</button>
+      <button data-tab="users">Users</button>
+      <button data-tab="stock">Inventory</button>
+      <a class="btn btn-ghost" href="/api/admin/export.csv" style="text-decoration:none;margin-left:auto">Export CSV</a>
+    </div>
+
+    <section class="tab on" id="tab-holdings"><div class="table-wrap"><table id="holdings"></table></div></section>
+    <section class="tab" id="tab-history"><div class="table-wrap"><table id="history"></table></div></section>
+    <section class="tab" id="tab-users">
+      <form id="user-form" class="inline">
+        <input name="card_id" placeholder="Card number" required>
+        <input name="name" placeholder="Name" required>
+        <input name="roll_no" placeholder="Roll no.">
+        <input name="department" placeholder="Department">
+        <button class="btn btn-primary">Add / update</button>
+      </form>
+      <p id="user-error" class="error"></p>
+      <div class="table-wrap"><table id="users"></table></div>
+    </section>
+    <section class="tab" id="tab-stock"><div class="table-wrap"><table id="stock"></table></div></section>
+  </div>
+</main>
+<div id="lightbox"><img alt=""></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+async function api(path, method = "GET", body) {
+  const res = await fetch(path, { method, headers: { "Content-Type": "application/json" }, body: body && JSON.stringify(body) });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || res.statusText);
+  return data;
+}
+
+async function load() {
+  const d = await api("/api/admin/summary");
+  $("#pin-form").hidden = true;
+  $("#panel").hidden = false;
+
+  $("#holdings").innerHTML = "<tr><th>Name</th><th>Card</th><th>Component</th><th>Qty</th></tr>" +
+    (d.holdings.map((h) => `<tr><td>${esc(h.user_name)}</td><td>${esc(h.card_id)}</td><td>${esc(h.label)}</td><td>${h.qty}</td></tr>`).join("")
+     || `<tr><td colspan="4" class="empty">Nothing is issued.</td></tr>`);
+
+  $("#history").innerHTML = "<tr><th>#</th><th>Time</th><th>User</th><th>Action</th><th>Items (confirmed / detected)</th><th>Tray photo</th></tr>" +
+    (d.history.map((t) => `<tr><td>${t.id}</td><td>${esc(t.created_at)}</td><td>${esc(t.user_name)}<br><small class="muted">${esc(t.card_id)}</small></td>
+      <td><span class="tag ${t.action}">${t.action}</span></td>
+      <td>${t.items.map((i) => `${i.qty} × ${esc(i.label)}` + (i.qty !== i.detected_qty ? ` <span class="mismatch">(model saw ${i.detected_qty})</span>` : "")).join("<br>")}</td>
+      <td>${t.image ? `<img src="/snapshots/${encodeURIComponent(t.image)}" loading="lazy" alt="tray">` : ""}</td></tr>`).join("")
+     || `<tr><td colspan="6" class="empty">No transactions yet.</td></tr>`);
+
+  $("#users").innerHTML = "<tr><th>Card</th><th>Name</th><th>Roll no.</th><th>Department</th><th></th></tr>" +
+    d.users.map((u) => `<tr><td>${esc(u.card_id)}</td><td>${esc(u.name)}</td><td>${esc(u.roll_no)}</td><td>${esc(u.department)}</td>
+      <td><button class="btn btn-ghost" data-delete="${esc(u.card_id)}">Delete</button></td></tr>`).join("");
+
+  $("#stock").innerHTML = "<tr><th>Component</th><th>Model class</th><th>In stock</th><th></th></tr>" +
+    Object.values(d.components).map((c) => `<tr><td>${esc(c.label)}</td><td><code>${esc(c.name)}</code></td>
+      <td><input type="number" min="0" value="${c.stock}" data-stock="${esc(c.name)}"></td>
+      <td><button class="btn btn-ghost" data-save="${esc(c.name)}">Save</button></td></tr>`).join("");
+}
+
+$("#pin-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  try { await api("/api/admin/login", "POST", { pin: $("#pin").value }); await load(); }
+  catch (err) { $("#pin-error").textContent = err.message; }
+});
+
+$("#user-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  try {
+    await api("/api/admin/users", "POST", Object.fromEntries(new FormData(e.target)));
+    e.target.reset(); $("#user-error").textContent = ""; await load();
+  } catch (err) { $("#user-error").textContent = err.message; }
+});
+
+document.addEventListener("click", async (e) => {
+  const t = e.target;
+  if (t.dataset.tab) {
+    document.querySelectorAll(".tabs button").forEach((b) => b.classList.toggle("on", b === t));
+    document.querySelectorAll(".tab").forEach((s) => s.classList.toggle("on", s.id === `tab-${t.dataset.tab}`));
+  } else if (t.dataset.delete && confirm(`Delete user ${t.dataset.delete}?`)) {
+    try { await api(`/api/admin/users/${encodeURIComponent(t.dataset.delete)}`, "DELETE"); await load(); }
+    catch (err) { alert(err.message); }
+  } else if (t.dataset.save) {
+    const stock = document.querySelector(`[data-stock="${t.dataset.save}"]`).value;
+    await api("/api/admin/stock", "POST", { name: t.dataset.save, stock: Number(stock) });
+    t.textContent = "Saved ✓"; setTimeout(() => (t.textContent = "Save"), 1500);
+  } else if (t.tagName === "IMG" && t.closest("#history")) {
+    $("#lightbox img").src = t.src; $("#lightbox").classList.add("on");
+  } else if (t.closest("#lightbox")) {
+    $("#lightbox").classList.remove("on");
+  }
+});
+
+load().catch(() => {});   // already unlocked in this browser session?
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab Component Kiosk</title>
+<link rel="stylesheet" href="/static/kiosk.css">
+</head>
+<body>
+
+<!-- 1. Login -->
+<section id="screen-login" class="screen active">
+  <div class="login-wrap">
+    <div class="brand">
+      <div class="logo">⚡</div>
+      <h1>Lab Component Kiosk</h1>
+      <p class="muted">Tap your ID card on the reader, or enter your card number</p>
+    </div>
+    <form id="login-form" class="login-card" autocomplete="off">
+      <!-- RFID readers that act as a keyboard type straight into this box and press Enter -->
+      <input id="card-input" inputmode="numeric" placeholder="Card number" aria-label="Card number">
+      <div class="keypad">
+        <button type="button" data-key="1">1</button><button type="button" data-key="2">2</button><button type="button" data-key="3">3</button>
+        <button type="button" data-key="4">4</button><button type="button" data-key="5">5</button><button type="button" data-key="6">6</button>
+        <button type="button" data-key="7">7</button><button type="button" data-key="8">8</button><button type="button" data-key="9">9</button>
+        <button type="button" data-key="clear" class="key-alt">Clear</button><button type="button" data-key="0">0</button><button type="button" data-key="back" class="key-alt">⌫</button>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Log in</button>
+      <p id="login-error" class="error" role="alert"></p>
+    </form>
+  </div>
+  <footer id="status-line" class="status-line"></footer>
+</section>
+
+<!-- 2. Dashboard -->
+<section id="screen-dashboard" class="screen">
+  <header class="topbar">
+    <div>
+      <h2 id="user-name"></h2>
+      <p id="user-meta" class="muted"></p>
+    </div>
+    <button class="btn btn-ghost" data-action="logout">Log out</button>
+  </header>
+  <div class="dash-grid">
+    <div class="actions">
+      <button class="action-tile issue" data-action="issue">
+        <span class="tile-icon">⬆</span><span class="tile-title">Issue components</span>
+        <span class="tile-sub">Place the parts you're taking in the tray</span>
+      </button>
+      <button class="action-tile return" data-action="return">
+        <span class="tile-icon">⬇</span><span class="tile-title">Return components</span>
+        <span class="tile-sub">Place the parts you're giving back in the tray</span>
+      </button>
+    </div>
+    <div class="panel">
+      <h3>Components with you</h3>
+      <ul id="holdings" class="item-list"></ul>
+    </div>
+    <div class="panel wide">
+      <h3>Recent activity</h3>
+      <ul id="history" class="history"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Tray scan -->
+<section id="screen-scan" class="screen">
+  <header class="topbar">
+    <div>
+      <h2 id="scan-title"></h2>
+      <p id="scan-hint" class="muted"></p>
+    </div>
+    <button class="btn btn-ghost" data-action="back">Cancel</button>
+  </header>
+  <div class="scan-grid">
+    <div class="camera-box">
+      <img id="camera-view" alt="Tray camera">
+      <span id="camera-badge" class="badge">LIVE</span>
+    </div>
+    <div class="scan-side">
+      <div id="scan-intro">
+        <ol class="steps">
+          <li>Spread the components out in the tray so they don't overlap.</li>
+          <li>Keep your hands out of the camera view.</li>
+          <li>Tap <b>Scan tray</b>.</li>
+        </ol>
+        <button class="btn btn-primary btn-block btn-big" data-action="scan">Scan tray</button>
+      </div>
+      <div id="scan-result" hidden>
+        <p class="muted" id="scan-summary"></p>
+        <ul id="scan-items" class="count-list"></ul>
+        <p class="muted small">Detected counts are pre-filled. Fix them with − / + if something was missed.</p>
+        <p id="scan-error" class="error" role="alert"></p>
+        <div class="row">
+          <button class="btn btn-ghost" data-action="rescan">Rescan</button>
+          <button class="btn btn-primary grow" id="confirm-btn" data-action="confirm">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Done -->
+<section id="screen-done" class="screen">
+  <div class="done-wrap">
+    <div class="done-check">✓</div>
+    <h1 id="done-title"></h1>
+    <ul id="done-items" class="done-items"></ul>
+    <p class="muted" id="done-countdown"></p>
+    <div class="row center">
+      <button class="btn btn-ghost" data-action="dashboard">Back to dashboard</button>
+      <button class="btn btn-primary" data-action="logout">Log out now</button>
+    </div>
+  </div>
+</section>
+
+<div id="busy" class="busy" hidden><div class="spinner"></div><p id="busy-text">Working…</p></div>
+
+<script>window.IDLE_SECONDS = {{ idle_seconds }};</script>
+<script src="/static/kiosk.js"></script>
+</body>
+</html>

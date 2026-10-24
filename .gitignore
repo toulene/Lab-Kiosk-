@@ -1,0 +1,33 @@
+# Datasets, video frames and previews - several GB, kept locally and on Roboflow
+images/datasets_raw/
+images/dataset_v*/
+images/downloads*/
+images/_old_partial_extracts/
+images/frames*/
+images/label_previews/
+images/previews_batch2/
+images/test_frames/
+
+# Runtime data, trained weights, training runs
+prototype/data/
+prototype/captures/
+images/kiosk_app/data/
+images/kiosk_app/models/
+runs/
+*.pth
+*.onnx
+
+# Secrets - API keys live only in .env on the Pi
+.env
+*.env
+
+# Slicer project / sliced G-code files - printer-specific; the STL and STEP files are the shareable source
+*.3mf
+*.gcode
+
+# Local tooling
+__pycache__/
+*.pyc
+.claude/
+venv/
+*.zip
