@@ -1,6 +1,6 @@
-# CEPDT Lab Kiosk
+# Lab Kiosk
 
-A component issue/return kiosk for the electronics lab: a Raspberry Pi 4 with a Pi Camera photographs
+A component issue/return kiosk for an electronics lab: a Raspberry Pi 4 model B with a Pi Camera photographs
 the parts on a tray, an object-detection model (RF-DETR) identifies and counts them, and the result
 is shown on an admin website.
 
